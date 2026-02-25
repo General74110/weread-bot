@@ -1137,7 +1137,7 @@ class CurlParser:
 
         # 提取请求数据
         request_data = {}
-        data_match = re.search(r"--data-raw '([^']+)'", curl_command)
+        data_match = re.search(r"--data-raw\s+\$?'([^']+)'", curl_command)
         if data_match:
             try:
                 request_data = json.loads(data_match.group(1))

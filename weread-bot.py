@@ -2947,8 +2947,8 @@ class WeReadSessionManager:
         except Exception as e:
             logging.error(f"❌ 请求失败: {e}")
             return False, 0.0
-
-    async def _refresh_cookie(self) -> bool:
+            
+            async def _refresh_cookie(self) -> bool:
     """刷新cookie"""
     logging.info("🍪 刷新cookie...")
 

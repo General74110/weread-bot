@@ -222,7 +222,7 @@ hack:
   # Cookie刷新时ql属性设置
   # 根据不同用户的环境，可能需要设置为True或False来确保cookie刷新正常工作
   # 默认值：false，如果遇到cookie刷新失败的问题，可以尝试设置为true
-  cookie_refresh_ql: false
+  cookie_refresh_ql: true
 
 # 定时任务配置（仅在startup_mode为scheduled时生效）
 schedule:

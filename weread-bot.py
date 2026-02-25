@@ -24,10 +24,10 @@
 使用示例:
     1. 基础使用：
        python weread-bot.py
-    
+
     2. 指定配置文件：
        python weread-bot.py --config custom_config.yaml
-    
+
     3. 守护进程模式：
        python weread-bot.py --daemon
 
@@ -605,12 +605,12 @@ class ConfigManager:
                     name = book_data.get("name", "")
                     book_id = book_data.get("book_id", "")
                     chapters_config = book_data.get("chapters", [])
-                    
+
                     if name and book_id and isinstance(chapters_config, list):
                         # 处理章节配置，支持两种格式
                         chapters = []
                         chapter_infos = []
-                        
+
                         for chapter_item in chapters_config:
                             if isinstance(chapter_item, str):
                                 # 格式：只有章节ID字符串
@@ -620,14 +620,14 @@ class ConfigManager:
                                 # 格式：包含章节ID和可选的索引
                                 chapter_id = chapter_item.get("chapter_id") or chapter_item.get("id")
                                 chapter_index = chapter_item.get("chapter_index") or chapter_item.get("index")
-                                
+
                                 if chapter_id:
                                     chapters.append(chapter_id)  # 保持向后兼容
                                     chapter_infos.append(ChapterInfo(
                                         chapter_id=chapter_id,
                                         chapter_index=chapter_index
                                     ))
-                        
+
                         if chapters:
                             books.append(BookInfo(
                                 name=name,
@@ -714,7 +714,7 @@ class ConfigManager:
         return value
 
     def _load_notification_channels(
-        self, config_data: dict
+            self, config_data: dict
     ) -> List[NotificationChannel]:
         """加载通知通道配置"""
         channels = []
@@ -728,10 +728,10 @@ class ConfigManager:
                 if isinstance(channel_data, dict):
                     # 应用环境变量覆盖到通道配置
                     channel_config = self._apply_env_overrides_to_channel(
-                        channel_data.get("name"), 
+                        channel_data.get("name"),
                         channel_data.get("config", {})
                     )
-                    
+
                     channel = NotificationChannel(
                         name=channel_data.get("name"),
                         enabled=self._get_bool_config(
@@ -748,20 +748,20 @@ class ConfigManager:
         return channels
 
     def _apply_env_overrides_to_channel(self, channel_name: str,
-                                         base_config: dict) -> dict:
+                                        base_config: dict) -> dict:
         """应用环境变量覆盖到通道配置"""
         config = base_config.copy()
-        
+
         if channel_name == "pushplus":
             if os.getenv("PUSHPLUS_TOKEN"):
                 config["token"] = os.getenv("PUSHPLUS_TOKEN")
-        
+
         elif channel_name == "telegram":
             if os.getenv("TELEGRAM_BOT_TOKEN"):
                 config["bot_token"] = os.getenv("TELEGRAM_BOT_TOKEN")
             if os.getenv("TELEGRAM_CHAT_ID"):
                 config["chat_id"] = os.getenv("TELEGRAM_CHAT_ID")
-            
+
             # 代理配置
             proxy_config = config.get("proxy", {})
             if os.getenv("HTTP_PROXY"):
@@ -770,15 +770,15 @@ class ConfigManager:
                 proxy_config["https"] = os.getenv("HTTPS_PROXY")
             if proxy_config:
                 config["proxy"] = proxy_config
-        
+
         elif channel_name == "wxpusher":
             if os.getenv("WXPUSHER_SPT"):
                 config["spt"] = os.getenv("WXPUSHER_SPT")
-        
+
         elif channel_name == "apprise":
             if os.getenv("APPRISE_URL"):
                 config["url"] = os.getenv("APPRISE_URL")
-        
+
         elif channel_name == "bark":
             if os.getenv("BARK_SERVER"):
                 config["server"] = os.getenv("BARK_SERVER")
@@ -786,7 +786,7 @@ class ConfigManager:
                 config["device_key"] = os.getenv("BARK_DEVICE_KEY")
             if os.getenv("BARK_SOUND"):
                 config["sound"] = os.getenv("BARK_SOUND")
-        
+
         elif channel_name == "ntfy":
             if os.getenv("NTFY_SERVER"):
                 config["server"] = os.getenv("NTFY_SERVER")
@@ -794,25 +794,25 @@ class ConfigManager:
                 config["topic"] = os.getenv("NTFY_TOPIC")
             if os.getenv("NTFY_TOKEN"):
                 config["token"] = os.getenv("NTFY_TOKEN")
-        
+
         elif channel_name == "feishu":
             if os.getenv("FEISHU_WEBHOOK_URL"):
                 config["webhook_url"] = os.getenv("FEISHU_WEBHOOK_URL")
             if os.getenv("FEISHU_MSG_TYPE"):
                 config["msg_type"] = os.getenv("FEISHU_MSG_TYPE")
-        
+
         elif channel_name == "wework":
             if os.getenv("WEWORK_WEBHOOK_URL"):
                 config["webhook_url"] = os.getenv("WEWORK_WEBHOOK_URL")
             if os.getenv("WEWORK_MSG_TYPE"):
                 config["msg_type"] = os.getenv("WEWORK_MSG_TYPE")
-        
+
         elif channel_name == "dingtalk":
             if os.getenv("DINGTALK_WEBHOOK_URL"):
                 config["webhook_url"] = os.getenv("DINGTALK_WEBHOOK_URL")
             if os.getenv("DINGTALK_MSG_TYPE"):
                 config["msg_type"] = os.getenv("DINGTALK_MSG_TYPE")
-        
+
         elif channel_name == "gotify":
             if os.getenv("GOTIFY_SERVER"):
                 config["server"] = os.getenv("GOTIFY_SERVER")
@@ -822,13 +822,13 @@ class ConfigManager:
                 config["priority"] = int(os.getenv("GOTIFY_PRIORITY"))
             if os.getenv("GOTIFY_TITLE"):
                 config["title"] = os.getenv("GOTIFY_TITLE")
-        
+
         return config
 
     def _create_channels_from_env_vars(self) -> List[NotificationChannel]:
         """从环境变量自动创建通知通道"""
         channels = []
-        
+
         # PushPlus
         if os.getenv("PUSHPLUS_TOKEN"):
             channels.append(NotificationChannel(
@@ -836,7 +836,7 @@ class ConfigManager:
                 enabled=True,
                 config={"token": os.getenv("PUSHPLUS_TOKEN")}
             ))
-        
+
         # Telegram
         if os.getenv("TELEGRAM_BOT_TOKEN") and os.getenv("TELEGRAM_CHAT_ID"):
             telegram_config = {
@@ -851,13 +851,13 @@ class ConfigManager:
                 proxy_config["https"] = os.getenv("HTTPS_PROXY")
             if proxy_config:
                 telegram_config["proxy"] = proxy_config
-            
+
             channels.append(NotificationChannel(
                 name="telegram",
                 enabled=True,
                 config=telegram_config
             ))
-        
+
         # WxPusher
         if os.getenv("WXPUSHER_SPT"):
             channels.append(NotificationChannel(
@@ -865,7 +865,7 @@ class ConfigManager:
                 enabled=True,
                 config={"spt": os.getenv("WXPUSHER_SPT")}
             ))
-        
+
         # Apprise
         if os.getenv("APPRISE_URL"):
             channels.append(NotificationChannel(
@@ -873,7 +873,7 @@ class ConfigManager:
                 enabled=True,
                 config={"url": os.getenv("APPRISE_URL")}
             ))
-        
+
         # Bark
         if os.getenv("BARK_SERVER") and os.getenv("BARK_DEVICE_KEY"):
             bark_config = {
@@ -882,13 +882,13 @@ class ConfigManager:
             }
             if os.getenv("BARK_SOUND"):
                 bark_config["sound"] = os.getenv("BARK_SOUND")
-            
+
             channels.append(NotificationChannel(
                 name="bark",
                 enabled=True,
                 config=bark_config
             ))
-        
+
         # Ntfy
         if os.getenv("NTFY_SERVER") and os.getenv("NTFY_TOPIC"):
             ntfy_config = {
@@ -897,13 +897,13 @@ class ConfigManager:
             }
             if os.getenv("NTFY_TOKEN"):
                 ntfy_config["token"] = os.getenv("NTFY_TOKEN")
-            
+
             channels.append(NotificationChannel(
                 name="ntfy",
                 enabled=True,
                 config=ntfy_config
             ))
-        
+
         # 飞书
         if os.getenv("FEISHU_WEBHOOK_URL"):
             feishu_config = {
@@ -911,13 +911,13 @@ class ConfigManager:
             }
             if os.getenv("FEISHU_MSG_TYPE"):
                 feishu_config["msg_type"] = os.getenv("FEISHU_MSG_TYPE")
-            
+
             channels.append(NotificationChannel(
                 name="feishu",
                 enabled=True,
                 config=feishu_config
             ))
-        
+
         # 企业微信
         if os.getenv("WEWORK_WEBHOOK_URL"):
             wework_config = {
@@ -925,13 +925,13 @@ class ConfigManager:
             }
             if os.getenv("WEWORK_MSG_TYPE"):
                 wework_config["msg_type"] = os.getenv("WEWORK_MSG_TYPE")
-            
+
             channels.append(NotificationChannel(
                 name="wework",
                 enabled=True,
                 config=wework_config
             ))
-        
+
         # 钉钉
         if os.getenv("DINGTALK_WEBHOOK_URL"):
             dingtalk_config = {
@@ -939,13 +939,13 @@ class ConfigManager:
             }
             if os.getenv("DINGTALK_MSG_TYPE"):
                 dingtalk_config["msg_type"] = os.getenv("DINGTALK_MSG_TYPE")
-            
+
             channels.append(NotificationChannel(
                 name="dingtalk",
                 enabled=True,
                 config=dingtalk_config
             ))
-        
+
         # Gotify
         if os.getenv("GOTIFY_SERVER") and os.getenv("GOTIFY_TOKEN"):
             gotify_config = {
@@ -956,7 +956,7 @@ class ConfigManager:
                 gotify_config["priority"] = int(os.getenv("GOTIFY_PRIORITY"))
             if os.getenv("GOTIFY_TITLE"):
                 gotify_config["title"] = os.getenv("GOTIFY_TITLE")
-            
+
             channels.append(NotificationChannel(
                 name="gotify",
                 enabled=True,
@@ -1116,7 +1116,7 @@ class CurlParser:
 
         # 从 -H 'Cookie: xxx' 提取
         cookie_header = next((v for k, v in headers_temp.items()
-                             if k.lower() == 'cookie'), '')
+                              if k.lower() == 'cookie'), '')
 
         # 从 -b 'xxx' 提取
         cookie_b = re.search(r"-b '([^']+)'", curl_command)
@@ -1150,9 +1150,9 @@ class CurlParser:
 
     @staticmethod
     def validate_curl_headers(headers: Dict[str, str],
-                             cookies: Dict[str, str],
-                             request_data: Dict[str, Any],
-                             user_name: str = "default") -> Tuple[bool, List[str]]:
+                              cookies: Dict[str, str],
+                              request_data: Dict[str, Any],
+                              user_name: str = "default") -> Tuple[bool, List[str]]:
         """
         验证 CURL headers 和 cookies 的合法性
 
@@ -1245,7 +1245,7 @@ class HttpClient:
         await self._client.aclose()
 
     async def post_json(
-        self, url: str, data: dict, headers: dict, cookies: dict
+            self, url: str, data: dict, headers: dict, cookies: dict
     ) -> Tuple[dict, float]:
         response, elapsed = await self._request_with_retries(
             url, headers=headers, cookies=cookies, json_data=data
@@ -1253,8 +1253,8 @@ class HttpClient:
         return response.json(), elapsed
 
     async def post_raw(
-        self, url: str, headers: dict = None, cookies: dict = None,
-        json_data: dict = None, data: Any = None
+            self, url: str, headers: dict = None, cookies: dict = None,
+            json_data: dict = None, data: Any = None
     ) -> Tuple[httpx.Response, float]:
         return await self._request_with_retries(
             url, headers=headers, cookies=cookies,
@@ -1262,8 +1262,8 @@ class HttpClient:
         )
 
     async def _request_with_retries(
-        self, url: str, headers: dict = None, cookies: dict = None,
-        json_data: dict = None, data: Any = None
+            self, url: str, headers: dict = None, cookies: dict = None,
+            json_data: dict = None, data: Any = None
     ) -> Tuple[httpx.Response, float]:
         attempts = max(1, self.config.retry_times)
         last_error = None
@@ -1340,7 +1340,7 @@ class SmartReadingManager:
         self.current_book_chapters = []
         self.current_chapter_index = 0
         self.last_book_switch_time = 0
-        
+
         # 创建书籍ID到章节的映射（保持向后兼容）
         self.book_chapters_map = {
             book.book_id: book.chapters for book in reading_config.books
@@ -1363,26 +1363,26 @@ class SmartReadingManager:
     def get_chapter_index(self, chapter_id: str, curl_ci: Optional[int] = None) -> Optional[int]:
         """
         获取章节索引，按照优先级：配置的索引值 > 自动计算的索引 > CURL提取的值
-        
+
         Args:
             chapter_id: 章节ID
             curl_ci: 从CURL提取的章节索引
-        
+
         Returns:
             章节索引，如果都没有则返回None
         """
         # 优先级1：配置的索引值
         if chapter_id in self.chapter_index_map:
             return self.chapter_index_map[chapter_id]
-        
+
         # 优先级2：CURL提取的值
         if curl_ci is not None:
             return curl_ci
-        
+
         # 优先级3：自动计算的索引（当前章节在列表中的位置）
         if self.current_book_chapters and chapter_id in self.current_book_chapters:
             return self.current_book_chapters.index(chapter_id)
-        
+
         return None
 
     def set_curl_data(self, book_id: str, chapter_id: str):
@@ -1391,11 +1391,11 @@ class SmartReadingManager:
             book_id, f"未知书籍({book_id[:10]}...)"
         )
         logging.info(f"🔍 尝试设置CURL数据: 书籍={book_name}, 章节={chapter_id}")
-        
+
         # 显示已配置的书籍信息
         if self.book_names_map:
             book_list = [
-                f"{name}({book_id[:10]}...)" 
+                f"{name}({book_id[:10]}...)"
                 for book_id, name in self.book_names_map.items()
             ]
             logging.info(f"🔍 当前配置的书籍: {', '.join(book_list)}")
@@ -1518,9 +1518,9 @@ class SmartReadingManager:
 
         # 检查是否应该换书（考虑冷却时间）
         should_switch_book = (
-            current_time - self.last_book_switch_time >
-            self.config.smart_random.book_switch_cooldown and
-            random.random() > self.config.smart_random.book_continuity
+                current_time - self.last_book_switch_time >
+                self.config.smart_random.book_switch_cooldown and
+                random.random() > self.config.smart_random.book_continuity
         )
 
         if should_switch_book and len(self.book_chapters_map) > 1:
@@ -1537,7 +1537,7 @@ class SmartReadingManager:
 
         # 检查是否应该跳章节
         should_skip_chapter = (
-            random.random() > self.config.smart_random.chapter_continuity
+                random.random() > self.config.smart_random.chapter_continuity
         )
 
         if should_skip_chapter:
@@ -1552,7 +1552,7 @@ class SmartReadingManager:
                 # 更新章节索引
                 self.current_chapter_ci = self.get_chapter_index(self.current_chapter_id)
                 logging.info(f"📄 智能跳章节: {self.current_chapter_id}, "
-                           f"索引 {self.current_chapter_ci if self.current_chapter_ci is not None else 'N/A'}")
+                             f"索引 {self.current_chapter_ci if self.current_chapter_ci is not None else 'N/A'}")
             else:
                 logging.debug("📄 当前书籍只有一个章节，无法跳章节")
         else:
@@ -1696,7 +1696,7 @@ class NotificationService:
         return await asyncio.to_thread(self.send_notification, message)
 
     def _send_notification_to_channel(
-        self, message: str, channel: NotificationChannel
+            self, message: str, channel: NotificationChannel
     ) -> bool:
         """发送通知到特定通道"""
         try:
@@ -1849,8 +1849,8 @@ class NotificationService:
 
             # 发送通知
             if apobj.notify(
-                title="微信读书自动阅读报告",
-                body=message
+                    title="微信读书自动阅读报告",
+                    body=message
             ):
                 logging.info("✅ Apprise通知发送成功")
                 return True
@@ -1929,7 +1929,7 @@ class NotificationService:
 
         # 飞书支持两种消息格式：text和rich_text
         msg_type = config.get("msg_type", "text")
-        
+
         if msg_type == "rich_text":
             # 富文本格式
             data = {
@@ -1969,7 +1969,7 @@ class NotificationService:
 
         # 企业微信支持text、markdown、news等格式
         msg_type = config.get("msg_type", "text")
-        
+
         if msg_type == "markdown":
             # Markdown格式
             data = {
@@ -2011,7 +2011,7 @@ class NotificationService:
 
         # 钉钉支持text、markdown、link等格式
         msg_type = config.get("msg_type", "text")
-        
+
         if msg_type == "markdown":
             # Markdown格式
             data = {
@@ -2051,7 +2051,7 @@ class NotificationService:
         # 构建Gotify API URL
         server = config["server"].rstrip("/")
         url = f"{server}/message"
-        
+
         # 准备请求数据
         data = {
             "message": message,
@@ -2285,7 +2285,7 @@ class WeReadApplication:
         tomorrow += timedelta(days=1)
         wait_seconds = (tomorrow - now).total_seconds()
 
-        logging.info(f"⏰ 等待到明天 00:00，剩余 {wait_seconds/3600:.1f} 小时")
+        logging.info(f"⏰ 等待到明天 00:00，剩余 {wait_seconds / 3600:.1f} 小时")
 
         # 分段等待，以便能够响应关闭信号
         for _ in range(int(wait_seconds)):
@@ -2425,7 +2425,7 @@ class WeReadApplication:
 
     @classmethod
     async def _generate_multi_user_summary(
-        cls, instance, all_session_stats, successful_users, failed_users
+            cls, instance, all_session_stats, successful_users, failed_users
     ):
         """生成多用户会话总结"""
         total_users = len(instance.config.users)
@@ -2448,7 +2448,7 @@ class WeReadApplication:
 👥 用户统计:
   📊 总用户数: {total_users}
   ✅ 成功用户: {successful_count} ({', '.join(successful_users)
-                                       if successful_users else '无'})
+        if successful_users else '无'})
   ❌ 失败用户: {failed_count} ({', '.join(failed_users) if failed_users else '无'})
 
 📖 阅读统计:
@@ -2456,7 +2456,7 @@ class WeReadApplication:
   ✅ 成功请求: {total_reads}次
   ❌ 失败请求: {total_failed_reads}次
   📈 整体成功率: {(total_reads / (total_reads + total_failed_reads) * 100)
-                    if (total_reads + total_failed_reads) > 0 else 0:.1f}%
+        if (total_reads + total_failed_reads) > 0 else 0:.1f}%
 
 🎉 多用户阅读任务完成！"""
 
@@ -2535,7 +2535,7 @@ class WeReadSessionManager:
         self._initialize_session_user_agent()
 
     def _apply_reading_overrides(
-        self, base_config: ReadingConfig, user_config: UserConfig
+            self, base_config: ReadingConfig, user_config: UserConfig
     ) -> ReadingConfig:
         """应用用户特定的阅读配置覆盖"""
         if not user_config or not user_config.reading_overrides:
@@ -2582,7 +2582,7 @@ class WeReadSessionManager:
                     Path(self.user_config.file_path).exists()):
                 try:
                     with open(
-                        self.user_config.file_path, 'r', encoding='utf-8'
+                            self.user_config.file_path, 'r', encoding='utf-8'
                     ) as f:
                         curl_content = f.read().strip()
                     logging.info(
@@ -2606,7 +2606,7 @@ class WeReadSessionManager:
                     Path(self.config.curl_file_path).exists()):
                 try:
                     with open(
-                        self.config.curl_file_path, 'r', encoding='utf-8'
+                            self.config.curl_file_path, 'r', encoding='utf-8'
                     ) as f:
                         curl_content = f.read().strip()
                     logging.info(
@@ -2635,9 +2635,9 @@ class WeReadSessionManager:
 
                 if not is_valid:
                     error_msg = (
-                        f"❌ 用户 {self.user_name} CURL 配置验证失败:\n"
-                        + "\n".join(f"  • {error}" for error in validation_errors)
-                        + f"\n请检查您的CURL配置是否正确，并确保包含所有必需的认证信息。"
+                            f"❌ 用户 {self.user_name} CURL 配置验证失败:\n"
+                            + "\n".join(f"  • {error}" for error in validation_errors)
+                            + f"\n请检查您的CURL配置是否正确，并确保包含所有必需的认证信息。"
                     )
                     logging.error(error_msg)
                     raise ValueError(error_msg)
@@ -2654,7 +2654,7 @@ class WeReadSessionManager:
                     if not missing_fields:
                         # 使用提取的数据，但保留时间戳相关字段的动态生成
                         self.data.update(curl_data)
-                        
+
                         # 确保用户身份标识符的完整性和正确性
                         self._validate_and_log_user_identity()
 
@@ -2708,21 +2708,21 @@ class WeReadSessionManager:
         ps_value = self.data.get('ps', 'N/A')
         pc_value = self.data.get('pc', 'N/A')
         app_id = self.data.get('appId', 'N/A')
-        
+
         # 记录用户身份信息（用于调试）
         logging.info(
             f"🔍 用户 {self.user_name} 身份验证: "
             f"ps={ps_value[:8]}***, pc={pc_value[:8]}***, "
             f"appId={app_id[:8]}***"
         )
-        
+
         # 验证关键身份字段是否存在
         if ps_value == 'N/A' or pc_value == 'N/A':
             logging.warning(
                 f"⚠️ 用户 {self.user_name} 缺少关键身份标识符: "
                 f"ps={ps_value}, pc={pc_value}"
             )
-        
+
         # 保存用户特定的身份标识符，确保在整个会话期间保持不变
         self.user_ps = ps_value
         self.user_pc = pc_value
@@ -2806,14 +2806,14 @@ class WeReadSessionManager:
                         # 计算实际阅读时长
                         current_time = datetime.now()
                         duration_delta = (
-                            current_time - self.session_stats.start_time
+                                current_time - self.session_stats.start_time
                         )
                         self.session_stats.actual_duration_seconds = int(
                             duration_delta.total_seconds()
                         )
 
                         progress_minutes = (
-                            self.session_stats.actual_duration_seconds // 60
+                                self.session_stats.actual_duration_seconds // 60
                         )
                         logging.info(
                             f"✅ 阅读成功，进度: {progress_minutes}分钟 / "
@@ -2861,7 +2861,7 @@ class WeReadSessionManager:
         book_id, chapter_id = self.reading_manager.get_next_reading_position()
         self.data['b'] = book_id
         self.data['c'] = chapter_id
-        
+
         # 设置章节索引（ci），按照优先级：配置的索引值 > 自动计算的索引 > CURL提取的值
         chapter_ci = self.reading_manager.current_chapter_ci
         if chapter_ci is not None:
@@ -2888,7 +2888,7 @@ class WeReadSessionManager:
             self.data['pc'] = self.user_pc
             if hasattr(self, 'user_app_id'):
                 self.data['appId'] = self.user_app_id
-            
+
             logging.debug(
                 f"🔒 用户 {self.user_name} 身份确认: ps={self.user_ps[:10]}..., "
                 f"pc={self.user_pc[:10]}..., book={book_id[:10]}..., "
@@ -2947,44 +2947,44 @@ class WeReadSessionManager:
         except Exception as e:
             logging.error(f"❌ 请求失败: {e}")
             return False, 0.0
-            
-            async def _refresh_cookie(self) -> bool:
-    """刷新cookie"""
-    logging.info("🍪 刷新cookie...")
 
-    try:
-        response, _ = await self.http_client.post_raw(
-            self.RENEW_URL,
-            headers=self.headers,
-            cookies=self.cookies,
-            json_data=self.cookie_data
-        )
+    async def _refresh_cookie(self) -> bool:
+        """刷新cookie"""
+        logging.info("🍪 刷新cookie...")
 
-        new_skey = response.cookies.get("wr_skey")
+        try:
+            response, _ = await self.http_client.post_raw(
+                self.RENEW_URL,
+                headers=self.headers,
+                cookies=self.cookies,
+                json_data=self.cookie_data
+            )
 
-        if not new_skey:
-            # 备用：从 Set-Cookie 解析
-            set_cookie = response.headers.get("set-cookie", "")
-            m = re.search(r"wr_skey=([^;]+)", set_cookie)
-            if m:
-                new_skey = m.group(1)
+            new_skey = response.cookies.get("wr_skey")
 
-        if not new_skey:
-            logging.error("❌ Cookie刷新失败，未找到wr_skey")
+            if not new_skey:
+                # 备用：从 Set-Cookie 解析
+                set_cookie = response.headers.get("set-cookie", "")
+                m = re.search(r"wr_skey=([^;]+)", set_cookie)
+                if m:
+                    new_skey = m.group(1)
+
+            if not new_skey:
+                logging.error("❌ Cookie刷新失败，未找到wr_skey")
+                return False
+
+            # ✅ 更新 cookies
+            self.cookies['wr_skey'] = new_skey
+
+            # ✅ 清理 header 中可能存在的旧 Cookie
+            self.headers.pop("Cookie", None)
+
+            logging.info(f"✅ Cookie刷新成功，新密钥: {new_skey[:8]}***")
+            return True
+
+        except Exception as e:
+            logging.error(f"❌ Cookie刷新失败: {e}")
             return False
-
-        # ✅ 更新 cookies
-        self.cookies['wr_skey'] = new_skey
-
-        # ✅ 清理 header 中可能存在的旧 Cookie
-        self.headers.pop("Cookie", None)
-
-        logging.info(f"✅ Cookie刷新成功，新密钥: {new_skey[:8]}***")
-        return True
-
-    except Exception as e:
-        logging.error(f"❌ Cookie刷新失败: {e}")
-        return False
 
     async def _fix_no_synckey(self):
         """修复synckey问题
@@ -3016,7 +3016,7 @@ class WeReadSessionManager:
     @staticmethod
     def _calculate_hash(input_string: str) -> str:
         """计算哈希值
-        
+
         代码引用: https://github.com/findmover/wxread
         """
         _7032f5 = 0x15051505
@@ -3032,7 +3032,7 @@ class WeReadSessionManager:
             prev_char_code = ord(input_string[_19094e - 1])
             prev_shift_amount = _19094e % 30
             _cc1055 = 0x7fffffff & (
-                _cc1055 ^ prev_char_code << prev_shift_amount
+                    _cc1055 ^ prev_char_code << prev_shift_amount
             )
             _19094e -= 2
 
@@ -3202,8 +3202,8 @@ async def _validate_curl_configs(config: WeReadConfig):
 
                 if not is_valid:
                     error_msg = (
-                        f"❌ 用户 {user_config.name} CURL配置验证失败:\n"
-                        + "\n".join(f"  • {error}" for error in validation_errors)
+                            f"❌ 用户 {user_config.name} CURL配置验证失败:\n"
+                            + "\n".join(f"  • {error}" for error in validation_errors)
                     )
                     logging.error(error_msg)
                     raise ValueError(error_msg)
@@ -3241,8 +3241,8 @@ async def _validate_curl_configs(config: WeReadConfig):
 
             if not is_valid:
                 error_msg = (
-                    "❌ 全局CURL配置验证失败:\n"
-                    + "\n".join(f"  • {error}" for error in validation_errors)
+                        "❌ 全局CURL配置验证失败:\n"
+                        + "\n".join(f"  • {error}" for error in validation_errors)
                 )
                 logging.error(error_msg)
                 raise ValueError(error_msg)
@@ -3300,6 +3300,7 @@ async def main():
             await notification_service.send_notification_async(error_msg)
         except Exception:
             pass
+
 
 if __name__ == "__main__":
     # 检查依赖

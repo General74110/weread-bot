@@ -2949,43 +2949,41 @@ class WeReadSessionManager:
             return False, 0.0
 
     async def _refresh_cookie(self) -> bool:
-        """刷新cookie"""
-        logging.info("🍪 刷新cookie...")
+    """刷新cookie"""
+    logging.info("🍪 刷新cookie...")
 
-        try:
-            response, _ = await self.http_client.post_raw(
-                self.RENEW_URL,
-                headers=self.headers,
-                cookies=self.cookies,
-                json_data=self.cookie_data
-            )
+    try:
+        response, _ = await self.http_client.post_raw(
+            self.RENEW_URL,
+            headers=self.headers,
+            cookies=self.cookies,
+            json_data=self.cookie_data
+        )
 
-            new_skey = response.cookies.get("wr_skey")
+        new_skey = response.cookies.get("wr_skey")
 
-            if not new_skey:
-                # 备用：从Set-Cookie解析
-                set_cookie = response.headers.get("set-cookie", "")
-                m = re.search(r"wr_skey=([^;]+)", set_cookie)
-                if m:
-    new_skey = m.group(1)
-  
-                        if '=' in parts:
-                            new_skey = parts.split('=', 1)[1].strip()
-                           
-                            break
+        if not new_skey:
+            # 备用：从 Set-Cookie 解析
+            set_cookie = response.headers.get("set-cookie", "")
+            m = re.search(r"wr_skey=([^;]+)", set_cookie)
+            if m:
+                new_skey = m.group(1)
 
-            if not new_skey:
-                logging.error("❌ Cookie刷新失败，未找到wr_skey")
-                return False
+        if not new_skey:
+            logging.error("❌ Cookie刷新失败，未找到wr_skey")
+            return False
 
-            self.cookies['wr_skey'] = new_skey
- self.headers.pop("Cookie", None)
-            logging.info(f"✅ Cookie刷新成功，新密钥: {new_skey[:8]}***")
-            return True
+        # ✅ 更新 cookies
+        self.cookies['wr_skey'] = new_skey
 
-        except Exception as e:
-            logging.error(f"❌ Cookie刷新失败: {e}")
+        # ✅ 清理 header 中可能存在的旧 Cookie
+        self.headers.pop("Cookie", None)
 
+        logging.info(f"✅ Cookie刷新成功，新密钥: {new_skey[:8]}***")
+        return True
+
+    except Exception as e:
+        logging.error(f"❌ Cookie刷新失败: {e}")
         return False
 
     async def _fix_no_synckey(self):

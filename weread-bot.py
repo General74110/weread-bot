@@ -1267,6 +1267,12 @@ class HttpClient:
     ) -> Tuple[httpx.Response, float]:
         attempts = max(1, self.config.retry_times)
         last_error = None
+        sanitized_headers = None
+        if headers:
+            sanitized_headers = dict(headers)
+            for key in list(sanitized_headers.keys()):
+                if key.lower() == "content-length":
+                    sanitized_headers.pop(key, None)
 
         for attempt in range(attempts):
             start_time = time.time()
@@ -1274,7 +1280,7 @@ class HttpClient:
                 await self._rate_limiter.acquire()
                 response = await self._client.post(
                     url,
-                    headers=headers,
+                    headers=sanitized_headers,
                     cookies=cookies,
                     json=json_data,
                     data=data

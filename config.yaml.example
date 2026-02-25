@@ -56,7 +56,7 @@ notification:
   include_statistics: true
   channels: []
 hack:
-  cookie_refresh_ql: false
+  cookie_refresh_ql: true
 logging:
   level: INFO
   format: detailed

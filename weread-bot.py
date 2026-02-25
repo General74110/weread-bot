@@ -2965,8 +2965,8 @@ class WeReadSessionManager:
             if not new_skey:
                 # 备用：从Set-Cookie解析
                 set_cookie = response.headers.get("set-cookie", "")
-               m = re.search(r"wr_skey=([^;]+)", set_cookie)
-if m:
+                m = re.search(r"wr_skey=([^;]+)", set_cookie)
+                if m:
     new_skey = m.group(1)
   
                         if '=' in parts:

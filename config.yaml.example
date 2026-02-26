@@ -5,7 +5,7 @@
 
 app:
   # 启动模式：immediate(立即执行), scheduled(定时执行), daemon(守护进程)
-  startup_mode: "immediate"
+  startup_mode: "scheduled"
   # 单位（秒），启动随机延迟，随机启动时间，防止被识别，建议尽量设置大一些
   startup_delay: "60-300"
   # 多用户模式下最大并发执行的用户数量，默认1表示顺序执行
